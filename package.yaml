@@ -1,0 +1,31 @@
+name: smurf
+version: 1
+
+dependencies:
+  - aeson
+  - jwt
+
+ghc-options:
+  - -Weverything
+  - -Wno-all-missed-specializations
+  - -Wno-implicit-prelude
+  - -Wno-missed-specialisations
+  - -Wno-missing-deriving-strategies
+  - -Wno-missing-exported-signatures
+  - -Wno-redundant-constraints
+  - -Wno-safe
+  - -Wno-unsafe
+
+library:
+  source-dirs: library
+
+_executable: &executable
+  main: Main.hs
+
+executable:
+  <<: *executable
+  dependencies: smurf
+  ghc-options:
+    - -rtsopts
+    - -threaded
+  source-dirs: executable
