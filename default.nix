@@ -2,27 +2,10 @@
   pkgs ? import ./nix/nixpkgs.nix {},
 }:
 let
-  inherit (import (builtins.fetchTarball "https://github.com/hercules-ci/gitignore/archive/7415c4f.tar.gz") { }) gitignoreSource;
   hpkgs = pkgs.haskell.packages."${compiler}";
-  smurf = hpkgs.developPackage {
-    root = pkgs.lib.cleanSourceWith
-      { filter = (path: type:
-          ! (builtins.any
-            (r: (builtins.match r (builtins.baseNameOf path)) != null)
-            [
-              "README.md"
-              "notes"
-              "dist-newstyle"
-              "ops"
-              "tf"
-              ".ghcid"
-              ".dir-locals.el"
-              ".semaphore"
-            ])
-        );
-        src = gitignoreSource ./.;
-      } ;
-    name = "smurf";
+  lorri-repro = hpkgs.developPackage {
+    root = pkgs.nix-gitignore.gitignoreSource [] ./.;
+    name = "lorri-repro";
     modifier = drv:
       with pkgs.haskellPackages;
       pkgs.haskell.lib.disableOptimization (pkgs.haskell.lib.overrideCabal drv (attrs: {
@@ -41,10 +24,10 @@ let
       }));
   };
 in if pkgs.lib.inNixShell
-   then smurf
+   then lorri-repro
    else
      pkgs.haskell.lib.dontCoverage (
        pkgs.haskell.lib.dontCheck
          (pkgs.haskell.lib.disableLibraryProfiling
            (pkgs.haskell.lib.disableExecutableProfiling
-             (pkgs.haskell.lib.disableOptimization smurf))))
+             (pkgs.haskell.lib.disableOptimization lorri-repro))))

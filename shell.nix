@@ -1,4 +1,4 @@
 let
-  smurf = import ./default.nix {};
+  lorri-repro = import ./default.nix {};
 in
-  smurf
+  lorri-repro
